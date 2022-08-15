@@ -1,12 +1,32 @@
-version: "3"
+version: "3.1"
 
 services:
-  app:
+  web:
+    container_name: web_coolsite
     build:
       context: .
     ports:
       - "8000:8000"
     volumes:
-      - ./app:/app
-    command: >
-      sh -c "python manage.py runserver 0.0.0.0:8000"
+      - ./coolsite:/web_coolsite
+    working_dir: /web_coolsite
+    command: sh -c "python manage.py runserver 0.0.0.0:8000"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: coolsite_db
+      DB_USER: andrii
+      DB_PASSWORD: 5048
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:latest
+
+    container_name: postgres_coolsite
+    restart: always
+    environment:
+      POSTGRES_DB: coolsite_db
+      POSTGRES_USER: andrii
+      POSTGRES_PASSWORD: 5048
+      POSTGRES_INITDB_ARGS: "-A md5"
